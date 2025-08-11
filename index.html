@@ -2,48 +2,31 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Cerdo & Bellotas — Deluxe 🐷</title>
-<meta name="theme-color" content="#10121a"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Cerdo & Bellotas — Arte Mejorado 🐷</title>
+<meta name="theme-color" content="#0f1020"/>
 <style>
   :root{
-    --bg1:#0f1118; --bg2:#171c26; --panel:#1a2030; --line:#2a3045;
-    --txt:#eaf0ff; --muted:#b6b9d8; --accent:#ff6f92; --ok:#67e0b3;
-    --pig:#ff9db2; --pig2:#ffc4d2; --acorn:#8b5a2b; --cap:#5b3a1a;
-  }
-  [data-theme="light"]{
-    --bg1:#f7f7fb; --bg2:#eef0f7; --panel:#ffffff; --line:#d6d9ea;
-    --txt:#1d1f2a; --muted:#61657a; --accent:#ff4f85; --ok:#1fbf97;
+    --bg:#0e1020; --bg2:#13162a; --line:#2a3150; --txt:#eaf0ff; --muted:#b9bde6;
   }
   *{box-sizing:border-box} html,body{height:100%;margin:0}
-  body{
-    font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-    color:var(--txt);
-    background: radial-gradient(1200px 600px at 50% -10%, var(--bg2), var(--bg1));
-    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-  }
-  .wrap{max-width:920px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-  header{
-    display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:space-between;
-    background:linear-gradient(180deg,var(--panel),rgba(0,0,0,.02));
-    border:1px solid var(--line); border-radius:14px; padding:10px 12px;
-  }
+  body{font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;color:var(--txt);
+       background: radial-gradient(1200px 800px at 50% -20%, var(--bg2), var(--bg));}
+  .wrap{max-width:960px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+  header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
+         background:linear-gradient(180deg,#1a1f34,#151a2b); border:1px solid var(--line); border-radius:14px; padding:10px 12px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .btn{
-    appearance:none;border:1px solid var(--line); background:var(--panel); color:var(--txt);
-    padding:9px 12px;border-radius:12px; cursor:pointer; transition:transform .12s ease, background .2s;
-    box-shadow: 0 3px 0 rgba(0,0,0,.12);
-  }
+  .btn{appearance:none;border:1px solid var(--line); background:#1a1f34; color:var(--txt);
+       padding:9px 12px;border-radius:12px; cursor:pointer; transition:transform .12s ease}
   .btn:active{transform:translateY(1px)}
   .badge{padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
-  .score{font-variant-numeric:tabular-nums}
-  .stage{background:linear-gradient(180deg,#131827, #0f1320); border:1px solid var(--line); border-radius:16px; overflow:hidden}
-  [data-theme="light"] .stage{background:linear-gradient(180deg,#ffffff,#f4f6ff)}
-  canvas{display:block;image-rendering:pixelated;touch-action:none}
+  .score{font-variant-numeric: tabular-nums}
+  .stage{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  canvas{display:block;width:100%;height:auto;touch-action:none;image-rendering:pixelated}
   .muted{color:var(--muted);text-align:center}
-  /* D-Pad */
+  /* Pad */
   .pad{display:grid;grid-template-columns:68px 68px 68px;grid-template-rows:68px 68px 68px;gap:10px;justify-content:center}
-  .pbtn{background:var(--panel);border:1px solid var(--line);border-radius:14px;color:inherit;font-size:20px;display:flex;align-items:center;justify-content:center}
+  .pbtn{background:#1a1f34;border:1px solid var(--line);border-radius:14px;color:#dde3ff;font-size:20px;display:flex;align-items:center;justify-content:center}
   .pbtn:active{transform:scale(.98)}
   .empty{background:transparent;border:none}
   @media (max-width:560px){ .pad{grid-template-columns:56px 56px 56px;grid-template-rows:56px 56px 56px} }
@@ -53,20 +36,21 @@
 <body>
 <div class="wrap">
   <header>
-    <div>🐷 <strong>Cerdo & Bellotas — Deluxe</strong></div>
+    <div>🐷 <strong>Cerdo & Bellotas — Arte Mejorado</strong></div>
     <div class="row">
       <button id="play" class="btn">▶️ Jugar / Reiniciar</button>
       <button id="pause" class="btn">⏸️ Pausa</button>
       <button id="sound" class="btn">🔊 Sonido</button>
       <button id="wrapBtn" class="btn">🔁 Wrap: ON</button>
-      <button id="theme" class="btn">🌙 Tema</button>
       <button id="share" class="btn">🔗 Compartir</button>
       <span class="badge">Puntos: <b id="score" class="score">0</b></span>
       <span class="badge">Récord: <b id="best" class="score">0</b></span>
     </div>
   </header>
 
-  <div class="stage"><canvas id="game" width="560" height="560"></canvas></div>
+  <div class="stage">
+    <canvas id="game" width="700" height="700"></canvas>
+  </div>
 
   <div class="pad" aria-label="Controles táctiles">
     <div class="empty"></div><button class="pbtn" id="up">▲</button><div class="empty"></div>
@@ -74,43 +58,105 @@
     <div class="empty"></div><button class="pbtn" id="down">▼</button><div class="empty"></div>
   </div>
 
-  <p class="muted">Flechas/WASD • D-Pad y swipe en móvil • Sonido “oing” • Wrap atraviesa paredes • Animación, orejas y cola, partículas al comer</p>
+  <p class="muted">Arte nuevo: cerdo con orejas/cola y brillo, bellotas ilustradas, fondo con colinas y estrellas. Controles: Flechas/WASD, D-Pad y swipe. Sonido “oing”, pausa, wrap y récord.</p>
 </div>
 
 <script>
 (()=>{
-  // DOM
-  const cvs=document.getElementById('game'), ctx=cvs.getContext('2d');
-  const scoreEl=document.getElementById('score'), bestEl=document.getElementById('best');
+  // ===== Sprites SVG embebidos (data URL) =====
+  const PIG_SVG = encodeURIComponent(`
+  <svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'>
+    <defs>
+      <radialGradient id='g' cx='40%' cy='35%' r='70%'>
+        <stop offset='0%' stop-color='#ffc9d7'/>
+        <stop offset='100%' stop-color='#ff94ad'/>
+      </radialGradient>
+    </defs>
+    <!-- orejas -->
+    <ellipse cx='38' cy='38' rx='16' ry='12' fill='url(#g)'/>
+    <ellipse cx='90' cy='38' rx='16' ry='12' fill='url(#g)'/>
+    <!-- cuerpo/cabeza -->
+    <circle cx='64' cy='64' r='40' fill='url(#g)'/>
+    <!-- hocico -->
+    <ellipse cx='80' cy='64' rx='18' ry='14' fill='#ffb7c6'/>
+    <circle cx='74' cy='64' r='3.5' fill='#7a3b4d'/>
+    <circle cx='86' cy='64' r='3.5' fill='#7a3b4d'/>
+    <!-- ojos -->
+    <circle cx='50' cy='56' r='4' fill='#2a2230'/>
+    <circle cx='60' cy='68' r='4' fill='#2a2230'/>
+    <!-- brillito -->
+    <circle cx='48' cy='46' r='6' fill='rgba(255,255,255,.35)'/>
+    <!-- cola -->
+    <path d='M26 78 q-16 4 -8 12 q10 10 20 0' stroke='#ff86a4' stroke-width='5' fill='none' stroke-linecap='round'/>
+  </svg>`);
+
+  const ACORN_SVG = encodeURIComponent(`
+  <svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>
+    <defs>
+      <radialGradient id='ga' cx='50%' cy='40%' r='60%'>
+        <stop offset='0%' stop-color='#b9783d'/>
+        <stop offset='100%' stop-color='#8b5a2b'/>
+      </radialGradient>
+    </defs>
+    <ellipse cx='32' cy='36' rx='20' ry='18' fill='url(#ga)'/>
+    <ellipse cx='32' cy='24' rx='24' ry='12' fill='#5b3a1a'/>
+    <path d='M32 11 q8 -6 4 -10' stroke='#5b3a1a' stroke-width='4' fill='none'/>
+  </svg>`);
+
+  const pigImg = new Image(); pigImg.src = 'data:image/svg+xml;utf8,'+PIG_SVG;
+  const acornImg = new Image(); acornImg.src = 'data:image/svg+xml;utf8,'+ACORN_SVG;
+
+  // ===== DOM & estado =====
+  const cv=document.getElementById('game'), ctx=cv.getContext('2d');
   const playBtn=document.getElementById('play'), pauseBtn=document.getElementById('pause');
-  const soundBtn=document.getElementById('sound'), wrapBtn=document.getElementById('wrapBtn');
-  const themeBtn=document.getElementById('theme'), shareBtn=document.getElementById('share');
+  const soundBtn=document.getElementById('sound'), wrapBtn=document.getElementById('wrapBtn'), shareBtn=document.getElementById('share');
+  const scoreEl=document.getElementById('score'), bestEl=document.getElementById('best');
   const up=document.getElementById('up'),down=document.getElementById('down'),left=document.getElementById('left'),right=document.getElementById('right');
 
-  // Config
-  const COLS=28, ROWS=28; let CELL=20;
-  const SPEED0=120, SPEED_MIN=65, SPEED_STEP=2;
+  const COLS=28, ROWS=28; let CELL=24;
+  const SPEED0=115, SPEED_MIN=65, SPEED_STEP=2;
 
-  // Estado
-  let snake, dir, nextDir, acorn, score, tick, fat, grow, particles=[];
+  let snake, dir, nextDir, acorn, score, tick, fat, grow, parts=[];
   let running=false, paused=false, last=0, acc=0, wrap=true;
   let audioOn=true, actx=null, best=+localStorage.getItem('cerdo_best')||0; bestEl.textContent=best;
 
-  // Utils
+  // ===== Utils =====
   const R=(n)=>Math.floor(Math.random()*n);
   const eq=(a,b)=>a.x===b.x&&a.y===b.y;
   const free=(occ)=>{for(;;){const p={x:R(COLS),y:R(ROWS)}; if(!occ.some(s=>eq(s,p))) return p;}};
-  const CSS=(n)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
-  // Responsive
+  // ===== Responsive canvas & fondo con colinas =====
   function resize(){
-    const maxSide=Math.min(window.innerWidth-24, 740);
-    const size=Math.max(340, Math.min(maxSide, window.innerHeight-300));
-    CELL=Math.max(12, Math.floor(size/Math.max(COLS,ROWS)));
-    cvs.width=CELL*COLS; cvs.height=CELL*ROWS; draw();
-  } addEventListener('resize', resize);
+    const maxSide=Math.min(window.innerWidth-24, 760);
+    const size=Math.max(360, Math.min(maxSide, window.innerHeight-320));
+    CELL=Math.max(16, Math.floor(size/Math.max(COLS,ROWS)));
+    cv.width=CELL*COLS; cv.height=CELL*ROWS; draw();
+  } window.addEventListener('resize', resize);
 
-  // Audio
+  function drawBackground(){
+    // cielo
+    const g=ctx.createLinearGradient(0,0,0,cv.height);
+    g.addColorStop(0,'#161a33'); g.addColorStop(1,'#0f1124');
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    // estrellas
+    ctx.fillStyle='rgba(255,255,255,.25)';
+    for(let i=0;i<50;i++){ const x=R(cv.width), y=R(cv.height*0.5); ctx.fillRect(x,y,1,1); }
+    // colinas
+    ctx.fillStyle='#0c1322'; ctx.beginPath();
+    ctx.moveTo(0, cv.height*0.75);
+    for(let x=0;x<=cv.width;x+=40){
+      const y= cv.height*0.75 + Math.sin(x*0.01)*12 + Math.cos(x*0.03)*6;
+      ctx.lineTo(x,y);
+    }
+    ctx.lineTo(cv.width, cv.height); ctx.lineTo(0, cv.height); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#1e2748'; ctx.lineWidth=1; ctx.stroke();
+    // rejilla sutil
+    ctx.strokeStyle='#1c233f'; ctx.lineWidth=1;
+    for(let i=0;i<=COLS;i++){ ctx.beginPath(); ctx.moveTo(i*CELL+.5,0); ctx.lineTo(i*CELL+.5,ROWS*CELL); ctx.stroke(); }
+    for(let j=0;j<=ROWS;j++){ ctx.beginPath(); ctx.moveTo(0,j*CELL+.5); ctx.lineTo(COLS*CELL,j*CELL+.5); ctx.stroke(); }
+  }
+
+  // ===== Audio =====
   function ensureAudio(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); }
   function oing(){
     if(!audioOn) return; try{
@@ -124,93 +170,56 @@
     }catch(e){}
   }
 
-  // Partículas (chispas rosas al comer)
+  // ===== Partículas =====
   function burst(x,y){
-    for(let i=0;i<10;i++){
-      particles.push({
-        x:x*CELL+CELL/2, y:y*CELL+CELL/2,
-        vx:(Math.random()-0.5)*3, vy:(Math.random()-0.5)*3,
-        r:Math.random()*3+1, a:1
-      });
+    for(let i=0;i<12;i++){
+      parts.push({x:x*CELL+CELL/2,y:y*CELL+CELL/2,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3,r:Math.random()*3+1,a:1});
     }
   }
-  function drawParticles(){
-    for(let i=particles.length-1;i>=0;i--){
-      const p=particles[i];
-      p.x+=p.vx; p.y+=p.vy; p.a-=0.03;
+  function drawParts(){
+    for(let i=parts.length-1;i>=0;i--){
+      const p=parts[i]; p.x+=p.vx; p.y+=p.vy; p.a-=0.03;
       ctx.fillStyle=`rgba(255,111,146,${Math.max(0,p.a)})`;
       ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-      if(p.a<=0) particles.splice(i,1);
+      if(p.a<=0) parts.splice(i,1);
     }
   }
 
-  // Dibujo
-  function board(){
-    const grd=ctx.createLinearGradient(0,0,0,cvs.height);
-    const dark = document.body.getAttribute('data-theme')!=='light';
-    grd.addColorStop(0,dark?'#141826':'#ffffff');
-    grd.addColorStop(1,dark?'#111422':'#f4f6ff');
-    ctx.fillStyle=grd; ctx.fillRect(0,0,cvs.width,cvs.height);
-    ctx.strokeStyle = dark?'#1f2435':'#e7e9f5'; ctx.lineWidth=1;
-    for(let i=0;i<=COLS;i++){ ctx.beginPath(); ctx.moveTo(i*CELL+.5,0); ctx.lineTo(i*CELL+.5,ROWS*CELL); ctx.stroke(); }
-    for(let j=0;j<=ROWS;j++){ ctx.beginPath(); ctx.moveTo(0,j*CELL+.5); ctx.lineTo(COLS*CELL,j*CELL+.5); ctx.stroke(); }
-  }
-  function acornDraw(p){
-    const cx=p.x*CELL+CELL/2, cy=p.y*CELL+CELL/2, r=Math.floor(CELL*.38);
-    ctx.save(); ctx.translate(cx,cy);
-    ctx.fillStyle=CSS('--acorn')||'#8b5a2b'; ctx.beginPath(); ctx.ellipse(0,2,r,r*.85,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=CSS('--cap')||'#5b3a1a'; ctx.beginPath(); ctx.ellipse(0,-r*.25,r*1.05,r*.55,0,Math.PI,0); ctx.fill();
+  // ===== Dibujo sprites =====
+  function drawPig(xc,yc,isHead,dir,scale=1){
+    const px=xc*CELL, py=yc*CELL;
+    const size = Math.floor(CELL*1.05*scale);
+    const off = (CELL - size)/2;
+    ctx.save();
+    // sombrita
+    ctx.fillStyle='rgba(0,0,0,.25)';
+    ctx.beginPath(); ctx.ellipse(px+CELL/2, py+CELL/2+4, size*.45, size*.28, 0, 0, Math.PI*2); ctx.fill();
+    // rotación suave según dirección
+    const angle = dir.x? 0 : (dir.y>0? Math.PI/18 : -Math.PI/18);
+    ctx.translate(px+off+size/2, py+off+size/2);
+    ctx.rotate(angle);
+    ctx.drawImage(pigImg, -size/2, -size/2, size, size);
     ctx.restore();
   }
-  function pig(seg,rad,isHead=false,dir={x:1,y:0},isTail=false){
-    const cx=seg.x*CELL+CELL/2, cy=seg.y*CELL+CELL/2;
-    // cuerpo con gradiente
-    const g=ctx.createRadialGradient(cx-3,cy-3,rad*.1,cx,cy,rad);
-    g.addColorStop(0,CSS('--pig2')||'#ffc4d2'); g.addColorStop(1,CSS('--pig')||'#ff9db2');
-    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,rad,0,Math.PI*2); ctx.fill();
-    // orejas (solo cabeza)
-    if(isHead){
-      ctx.fillStyle=g;
-      const ex = cx - dir.y*rad*0.9, ey = cy + dir.x*rad*0.9;
-      const ex2= cx + dir.y*rad*0.9, ey2= cy - dir.x*rad*0.9;
-      ctx.beginPath(); ctx.ellipse(ex,ey,rad*.30,rad*.22,0,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(ex2,ey2,rad*.30,rad*.22,0,0,Math.PI*2); ctx.fill();
-    }
-    // hocico + ojos (solo cabeza)
-    if(isHead){
-      const nx=cx+dir.x*rad*.35, ny=cy+dir.y*rad*.35;
-      ctx.fillStyle='#ffb7c6'; ctx.beginPath(); ctx.ellipse(nx,ny,rad*.45,rad*.33,0,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#7a3b4d';
-      const dx = dir.y?rad*.12:rad*.18, dy=dir.x?rad*.12:rad*.18;
-      ctx.beginPath(); ctx.arc(nx-dx,ny-dy,rad*.08,0,Math.PI*2); ctx.arc(nx+dx,ny+dy,rad*.08,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#2a2230';
-      const ox=cx+dir.x*rad*.05-dir.y*rad*.25, oy=cy+dir.y*rad*.05+dir.x*rad*.25;
-      const ox2=cx+dir.x*rad*.05+dir.y*rad*.25, oy2=cy+dir.y*rad*.05-dir.x*rad*.25;
-      ctx.beginPath(); ctx.arc(ox,oy,rad*.08,0,Math.PI*2); ctx.arc(ox2,oy2,rad*.08,0,Math.PI*2); ctx.fill();
-    }
-    // colita (solo última pieza)
-    if(isTail){
-      ctx.strokeStyle='#ff86a4'; ctx.lineWidth=Math.max(1,rad*.14);
-      ctx.beginPath();
-      ctx.moveTo(cx,cy);
-      ctx.quadraticCurveTo(cx-rad*.9,cy+rad*.2, cx-rad*1.2, cy);
-      ctx.stroke();
-    }
+  function drawAcorn(xc,yc){
+    const px=xc*CELL, py=yc*CELL;
+    const size = Math.floor(CELL*0.9);
+    const off=(CELL-size)/2;
+    ctx.drawImage(acornImg, px+off, py+off, size, size);
   }
 
-  // Juego
+  // ===== Juego =====
   function reset(){
     snake=[{x:Math.floor(COLS/2)-1,y:Math.floor(ROWS/2)},
            {x:Math.floor(COLS/2)-2,y:Math.floor(ROWS/2)},
            {x:Math.floor(COLS/2)-3,y:Math.floor(ROWS/2)}];
     dir={x:1,y:0}; nextDir={...dir}; score=0; scoreEl.textContent=score;
     tick=SPEED0; fat=0; grow=0; acorn=free(snake);
-    running=true; paused=false; last=0; acc=0; cvs.style.animation='pop .22s ease';
+    running=true; paused=false; last=0; acc=0;
     draw();
   }
   function setPause(p){ paused=p; pauseBtn.textContent=p?'▶️ Reanudar':'⏸️ Pausa'; }
   function step(){
-    // sin reversa instantánea
     if(Math.abs(nextDir.x)!==Math.abs(dir.x) || Math.abs(nextDir.y)!==Math.abs(dir.y)){
       if(!(nextDir.x===-dir.x && nextDir.y===-dir.y)) dir=nextDir;
     }
@@ -219,42 +228,43 @@
     if(snake.some((s,i)=>i>0 && s.x===nx && s.y===ny)) return over();
     snake.unshift({x:nx,y:ny});
     if(nx===acorn.x&&ny===acorn.y){
-      score++; scoreEl.textContent=score;
-      if(score>best){best=score; localStorage.setItem('cerdo_best',best); bestEl.textContent=best;}
+      score++; scoreEl.textContent=score; if(score>best){best=score; localStorage.setItem('cerdo_best',best); bestEl.textContent=best;}
       grow++; fat=Math.min(fat+1,20); tick=Math.max(SPEED_MIN, tick-SPEED_STEP);
-      burst(nx,ny); acorn=free(snake); oing();
+      acorn=free(snake); burst(nx,ny); oing();
     }
     if(grow>0) grow--; else snake.pop();
   }
   function over(){ running=false; paused=false; draw(true); }
 
   function draw(gameOver=false){
-    board(); acornDraw(acorn);
-    const base=CELL*.38, extra=Math.min(fat*.02*CELL, CELL*.22), headDir=dir;
-    snake.forEach((s,i)=>{ const r=base+extra*(i?0.75:1); ctx.save(); ctx.shadowColor='rgba(255,111,146,.35)'; ctx.shadowBlur=fat*.3;
-      pig(s,r,i===0,i===0?headDir:{x:0,y:0}, i===snake.length-1); ctx.restore();
+    drawBackground();
+    // comida
+    drawAcorn(acorn.x,acorn.y);
+    // cerdito
+    const extra = Math.min(fat*0.03, 0.6);
+    snake.forEach((seg,i)=>{
+      const scale = 1 + (i===0? extra : extra*0.7);
+      drawPig(seg.x,seg.y,i===0, dir, scale);
     });
-    drawParticles();
+    drawParts();
     if(!running || gameOver){
-      ctx.fillStyle='rgba(0,0,0,.55)'; if(document.body.getAttribute('data-theme')==='light') ctx.fillStyle='rgba(0,0,0,.25)';
-      ctx.fillRect(0,0,cvs.width,cvs.height);
-      ctx.fillStyle=document.body.getAttribute('data-theme')==='light'?'#111':'#fff';
-      ctx.textAlign='center'; ctx.font='800 28px ui-sans-serif,system-ui'; 
-      ctx.fillText(gameOver?'💀 ¡Has perdido, jamoncito!':'🐷 Cerdo & Bellotas', cvs.width/2, cvs.height/2-10);
-      ctx.font='600 16px ui-sans-serif,system-ui'; ctx.fillText('Pulsa ▶️ para reiniciar', cvs.width/2, cvs.height/2+22);
+      ctx.fillStyle='rgba(0,0,0,.55)';
+      ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.font='800 28px system-ui';
+      ctx.fillText(gameOver?'💀 ¡Has perdido, jamoncito!':'🐷 Cerdo & Bellotas', cv.width/2, cv.height/2-10);
+      ctx.font='600 16px system-ui'; ctx.fillText('Pulsa ▶️ para reiniciar', cv.width/2, cv.height/2+22);
     }
   }
 
-  // Loop
+  // ===== Loop =====
   function loop(t){
     if(!running){ draw(); return; }
     if(paused){ draw(); requestAnimationFrame(loop); return; }
     if(!last) last=t; const dt=t-last; last=t; acc+=dt;
-    while(acc>=tick){ step(); acc-=tick; }
-    draw(); requestAnimationFrame(loop);
+    while(acc>=tick){ step(); acc-=tick; } draw(); requestAnimationFrame(loop);
   }
 
-  // Input
+  // ===== Controles =====
   addEventListener('keydown',e=>{
     const k=e.key.toLowerCase();
     if(k==='arrowup'||k==='w') nextDir={x:0,y:-1};
@@ -267,20 +277,19 @@
   function tap(v){ nextDir=v; }
   ;[up,down,left,right].forEach(b=>b.addEventListener('touchstart',ev=>{ev.preventDefault(); b.click();},{passive:false}));
   up.onclick=()=>tap({x:0,y:-1}); down.onclick=()=>tap({x:0,y:1}); left.onclick=()=>tap({x:-1,y:0}); right.onclick=()=>tap({x:1,y:0});
-  // Swipe
-  let t0=null; cvs.addEventListener('touchstart',e=>{ if(!running) return; const t=e.changedTouches[0]; t0={x:t.clientX,y:t.clientY}; },{passive:true});
-  cvs.addEventListener('touchend',e=>{ if(!t0) return; const t=e.changedTouches[0], dx=t.clientX-t0.x, dy=t.clientY-t0.y; if(Math.max(Math.abs(dx),Math.abs(dy))>24){ if(Math.abs(dx)>Math.abs(dy)) nextDir={x:dx>0?1:-1,y:0}; else nextDir={x:0,y:dy>0?1:-1}; } t0=null; },{passive:true});
+  // swipe
+  let t0=null; cv.addEventListener('touchstart',e=>{ if(!running) return; const t=e.changedTouches[0]; t0={x:t.clientX,y:t.clientY}; },{passive:true});
+  cv.addEventListener('touchend',e=>{ if(!t0) return; const t=e.changedTouches[0], dx=t.clientX-t0.x, dy=t.clientY-t0.y; if(Math.max(Math.abs(dx),Math.abs(dy))>24){ if(Math.abs(dx)>Math.abs(dy)) nextDir={x:dx>0?1:-1,y:0}; else nextDir={x:0,y:dy>0?1:-1}; } t0=null; },{passive:true});
 
-  // Botones
+  // Botones UI
   playBtn.onclick=()=>{ ensureAudio(); reset(); requestAnimationFrame(loop); };
   pauseBtn.onclick=()=>{ if(running) setPause(!paused); };
   soundBtn.onclick=()=>{ audioOn=!audioOn; soundBtn.textContent=audioOn?'🔊 Sonido':'🔇 Silencio'; if(audioOn) ensureAudio(); };
   wrapBtn.onclick =()=>{ wrap=!wrap; wrapBtn.textContent=wrap?'🔁 Wrap: ON':'⛔ Wrap: OFF'; };
-  themeBtn.onclick=()=>{ const light = document.body.getAttribute('data-theme')==='light'; document.body.setAttribute('data-theme', light?'':'light'); };
   shareBtn.onclick=async()=>{
     const url=location.href, text='¡Prueba mi juego Cerdo & Bellotas! 🐷🌰';
     if(navigator.share){ try{await navigator.share({title:document.title,text,url});}catch(_){} }
-    else{ try{await navigator.clipboard.writeText(url); shareBtn.textContent='✅ Copiado'; setTimeout(()=>shareBtn.textContent='🔗 Compartir',1600);}catch(_){} }
+    else { try{await navigator.clipboard.writeText(url); shareBtn.textContent='✅ Copiado'; setTimeout(()=>shareBtn.textContent='🔗 Compartir',1600);}catch(_){} }
   };
 
   // Init
