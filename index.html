@@ -1,159 +1,291 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cerdo Snake 🐷</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Cerdo & Bellotas — Deluxe 🐷</title>
+<meta name="theme-color" content="#10121a"/>
 <style>
-    body {
-        margin: 0;
-        font-family: 'Comic Sans MS', sans-serif;
-        background-color: #ffefd5;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        height: 100vh;
-    }
-    h1 {
-        margin-top: 20px;
-        color: #ff4081;
-        text-shadow: 2px 2px #fff;
-    }
-    canvas {
-        background: #fff8dc;
-        border: 5px solid #ff4081;
-        border-radius: 10px;
-        margin-top: 20px;
-    }
-    .score {
-        font-size: 20px;
-        color: #333;
-        margin-top: 10px;
-    }
-    button {
-        margin-top: 15px;
-        padding: 10px 20px;
-        background-color: #ff4081;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #ff6099;
-    }
+  :root{
+    --bg1:#0f1118; --bg2:#171c26; --panel:#1a2030; --line:#2a3045;
+    --txt:#eaf0ff; --muted:#b6b9d8; --accent:#ff6f92; --ok:#67e0b3;
+    --pig:#ff9db2; --pig2:#ffc4d2; --acorn:#8b5a2b; --cap:#5b3a1a;
+  }
+  [data-theme="light"]{
+    --bg1:#f7f7fb; --bg2:#eef0f7; --panel:#ffffff; --line:#d6d9ea;
+    --txt:#1d1f2a; --muted:#61657a; --accent:#ff4f85; --ok:#1fbf97;
+  }
+  *{box-sizing:border-box} html,body{height:100%;margin:0}
+  body{
+    font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    color:var(--txt);
+    background: radial-gradient(1200px 600px at 50% -10%, var(--bg2), var(--bg1));
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+  header{
+    display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:space-between;
+    background:linear-gradient(180deg,var(--panel),rgba(0,0,0,.02));
+    border:1px solid var(--line); border-radius:14px; padding:10px 12px;
+  }
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{
+    appearance:none;border:1px solid var(--line); background:var(--panel); color:var(--txt);
+    padding:9px 12px;border-radius:12px; cursor:pointer; transition:transform .12s ease, background .2s;
+    box-shadow: 0 3px 0 rgba(0,0,0,.12);
+  }
+  .btn:active{transform:translateY(1px)}
+  .badge{padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .score{font-variant-numeric:tabular-nums}
+  .stage{background:linear-gradient(180deg,#131827, #0f1320); border:1px solid var(--line); border-radius:16px; overflow:hidden}
+  [data-theme="light"] .stage{background:linear-gradient(180deg,#ffffff,#f4f6ff)}
+  canvas{display:block;image-rendering:pixelated;touch-action:none}
+  .muted{color:var(--muted);text-align:center}
+  /* D-Pad */
+  .pad{display:grid;grid-template-columns:68px 68px 68px;grid-template-rows:68px 68px 68px;gap:10px;justify-content:center}
+  .pbtn{background:var(--panel);border:1px solid var(--line);border-radius:14px;color:inherit;font-size:20px;display:flex;align-items:center;justify-content:center}
+  .pbtn:active{transform:scale(.98)}
+  .empty{background:transparent;border:none}
+  @media (max-width:560px){ .pad{grid-template-columns:56px 56px 56px;grid-template-rows:56px 56px 56px} }
+  @keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
+<div class="wrap">
+  <header>
+    <div>🐷 <strong>Cerdo & Bellotas — Deluxe</strong></div>
+    <div class="row">
+      <button id="play" class="btn">▶️ Jugar / Reiniciar</button>
+      <button id="pause" class="btn">⏸️ Pausa</button>
+      <button id="sound" class="btn">🔊 Sonido</button>
+      <button id="wrapBtn" class="btn">🔁 Wrap: ON</button>
+      <button id="theme" class="btn">🌙 Tema</button>
+      <button id="share" class="btn">🔗 Compartir</button>
+      <span class="badge">Puntos: <b id="score" class="score">0</b></span>
+      <span class="badge">Récord: <b id="best" class="score">0</b></span>
+    </div>
+  </header>
 
-<h1>🐷 Cerdo Snake</h1>
-<canvas id="gameCanvas" width="300" height="300"></canvas>
-<div class="score" id="score">Puntos: 0 | Récord: 0</div>
-<button onclick="shareScore()">Compartir Puntuación</button>
+  <div class="stage"><canvas id="game" width="560" height="560"></canvas></div>
+
+  <div class="pad" aria-label="Controles táctiles">
+    <div class="empty"></div><button class="pbtn" id="up">▲</button><div class="empty"></div>
+    <button class="pbtn" id="left">◀</button><div class="empty"></div><button class="pbtn" id="right">▶</button>
+    <div class="empty"></div><button class="pbtn" id="down">▼</button><div class="empty"></div>
+  </div>
+
+  <p class="muted">Flechas/WASD • D-Pad y swipe en móvil • Sonido “oing” • Wrap atraviesa paredes • Animación, orejas y cola, partículas al comer</p>
+</div>
 
 <script>
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+(()=>{
+  // DOM
+  const cvs=document.getElementById('game'), ctx=cvs.getContext('2d');
+  const scoreEl=document.getElementById('score'), bestEl=document.getElementById('best');
+  const playBtn=document.getElementById('play'), pauseBtn=document.getElementById('pause');
+  const soundBtn=document.getElementById('sound'), wrapBtn=document.getElementById('wrapBtn');
+  const themeBtn=document.getElementById('theme'), shareBtn=document.getElementById('share');
+  const up=document.getElementById('up'),down=document.getElementById('down'),left=document.getElementById('left'),right=document.getElementById('right');
 
-const box = 15;
-let snake = [];
-snake[0] = { x: 5 * box, y: 5 * box };
+  // Config
+  const COLS=28, ROWS=28; let CELL=20;
+  const SPEED0=120, SPEED_MIN=65, SPEED_STEP=2;
 
-let food = {
-    x: Math.floor(Math.random() * 20) * box,
-    y: Math.floor(Math.random() * 20) * box
-};
+  // Estado
+  let snake, dir, nextDir, acorn, score, tick, fat, grow, particles=[];
+  let running=false, paused=false, last=0, acc=0, wrap=true;
+  let audioOn=true, actx=null, best=+localStorage.getItem('cerdo_best')||0; bestEl.textContent=best;
 
-let direction;
-let score = 0;
-let record = localStorage.getItem("cerdoSnakeRecord") || 0;
+  // Utils
+  const R=(n)=>Math.floor(Math.random()*n);
+  const eq=(a,b)=>a.x===b.x&&a.y===b.y;
+  const free=(occ)=>{for(;;){const p={x:R(COLS),y:R(ROWS)}; if(!occ.some(s=>eq(s,p))) return p;}};
+  const CSS=(n)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
-document.addEventListener("keydown", event => {
-    if (event.keyCode === 37 && direction !== "RIGHT") direction = "LEFT";
-    if (event.keyCode === 38 && direction !== "DOWN") direction = "UP";
-    if (event.keyCode === 39 && direction !== "LEFT") direction = "RIGHT";
-    if (event.keyCode === 40 && direction !== "UP") direction = "DOWN";
-});
+  // Responsive
+  function resize(){
+    const maxSide=Math.min(window.innerWidth-24, 740);
+    const size=Math.max(340, Math.min(maxSide, window.innerHeight-300));
+    CELL=Math.max(12, Math.floor(size/Math.max(COLS,ROWS)));
+    cvs.width=CELL*COLS; cvs.height=CELL*ROWS; draw();
+  } addEventListener('resize', resize);
 
-function draw() {
-    ctx.clearRect(0, 0, 300, 300);
+  // Audio
+  function ensureAudio(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); }
+  function oing(){
+    if(!audioOn) return; try{
+      ensureAudio(); const a=actx, d=.22, o1=a.createOscillator(), o2=a.createOscillator(), g=a.createGain();
+      o1.type='square'; o2.type='sine'; const t=a.currentTime, T=t+d;
+      o1.frequency.setValueAtTime(180,t); o1.frequency.exponentialRampToValueAtTime(70,T);
+      o2.frequency.setValueAtTime(240,t); o2.frequency.exponentialRampToValueAtTime(90,T);
+      g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.38,t+.04); g.gain.exponentialRampToValueAtTime(.0001,T);
+      o1.connect(g); o2.connect(g); g.connect(a.destination); o1.start(t); o2.start(t); o1.stop(T); o2.stop(T);
+      if(navigator.vibrate) navigator.vibrate(20);
+    }catch(e){}
+  }
 
-    // Dibujar serpiente
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = (i === 0) ? "#ff4081" : "#ffc0cb";
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
-        ctx.strokeStyle = "#fff";
-        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+  // Partículas (chispas rosas al comer)
+  function burst(x,y){
+    for(let i=0;i<10;i++){
+      particles.push({
+        x:x*CELL+CELL/2, y:y*CELL+CELL/2,
+        vx:(Math.random()-0.5)*3, vy:(Math.random()-0.5)*3,
+        r:Math.random()*3+1, a:1
+      });
     }
-
-    // Dibujar comida (cerdito)
-    ctx.fillStyle = "#ff69b4";
-    ctx.beginPath();
-    ctx.arc(food.x + box/2, food.y + box/2, box/2, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Movimiento
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-
-    if (direction === "LEFT") snakeX -= box;
-    if (direction === "UP") snakeY -= box;
-    if (direction === "RIGHT") snakeX += box;
-    if (direction === "DOWN") snakeY += box;
-
-    // Comida
-    if (snakeX === food.x && snakeY === food.y) {
-        score++;
-        if (score > record) {
-            record = score;
-            localStorage.setItem("cerdoSnakeRecord", record);
-        }
-        food = {
-            x: Math.floor(Math.random() * 20) * box,
-            y: Math.floor(Math.random() * 20) * box
-        };
-    } else {
-        snake.pop();
+  }
+  function drawParticles(){
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];
+      p.x+=p.vx; p.y+=p.vy; p.a-=0.03;
+      ctx.fillStyle=`rgba(255,111,146,${Math.max(0,p.a)})`;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      if(p.a<=0) particles.splice(i,1);
     }
+  }
 
-    let newHead = { x: snakeX, y: snakeY };
-
-    // Colisión
-    if (snakeX < 0 || snakeY < 0 || snakeX >= 300 || snakeY >= 300 || collision(newHead, snake)) {
-        clearInterval(game);
-        alert("💥 Has perdido! Puntuación: " + score);
+  // Dibujo
+  function board(){
+    const grd=ctx.createLinearGradient(0,0,0,cvs.height);
+    const dark = document.body.getAttribute('data-theme')!=='light';
+    grd.addColorStop(0,dark?'#141826':'#ffffff');
+    grd.addColorStop(1,dark?'#111422':'#f4f6ff');
+    ctx.fillStyle=grd; ctx.fillRect(0,0,cvs.width,cvs.height);
+    ctx.strokeStyle = dark?'#1f2435':'#e7e9f5'; ctx.lineWidth=1;
+    for(let i=0;i<=COLS;i++){ ctx.beginPath(); ctx.moveTo(i*CELL+.5,0); ctx.lineTo(i*CELL+.5,ROWS*CELL); ctx.stroke(); }
+    for(let j=0;j<=ROWS;j++){ ctx.beginPath(); ctx.moveTo(0,j*CELL+.5); ctx.lineTo(COLS*CELL,j*CELL+.5); ctx.stroke(); }
+  }
+  function acornDraw(p){
+    const cx=p.x*CELL+CELL/2, cy=p.y*CELL+CELL/2, r=Math.floor(CELL*.38);
+    ctx.save(); ctx.translate(cx,cy);
+    ctx.fillStyle=CSS('--acorn')||'#8b5a2b'; ctx.beginPath(); ctx.ellipse(0,2,r,r*.85,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=CSS('--cap')||'#5b3a1a'; ctx.beginPath(); ctx.ellipse(0,-r*.25,r*1.05,r*.55,0,Math.PI,0); ctx.fill();
+    ctx.restore();
+  }
+  function pig(seg,rad,isHead=false,dir={x:1,y:0},isTail=false){
+    const cx=seg.x*CELL+CELL/2, cy=seg.y*CELL+CELL/2;
+    // cuerpo con gradiente
+    const g=ctx.createRadialGradient(cx-3,cy-3,rad*.1,cx,cy,rad);
+    g.addColorStop(0,CSS('--pig2')||'#ffc4d2'); g.addColorStop(1,CSS('--pig')||'#ff9db2');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,rad,0,Math.PI*2); ctx.fill();
+    // orejas (solo cabeza)
+    if(isHead){
+      ctx.fillStyle=g;
+      const ex = cx - dir.y*rad*0.9, ey = cy + dir.x*rad*0.9;
+      const ex2= cx + dir.y*rad*0.9, ey2= cy - dir.x*rad*0.9;
+      ctx.beginPath(); ctx.ellipse(ex,ey,rad*.30,rad*.22,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(ex2,ey2,rad*.30,rad*.22,0,0,Math.PI*2); ctx.fill();
     }
-
-    snake.unshift(newHead);
-
-    document.getElementById("score").innerText = `Puntos: ${score} | Récord: ${record}`;
-}
-
-function collision(head, array) {
-    for (let i = 0; i < array.length; i++) {
-        if (head.x === array[i].x && head.y === array[i].y) {
-            return true;
-        }
+    // hocico + ojos (solo cabeza)
+    if(isHead){
+      const nx=cx+dir.x*rad*.35, ny=cy+dir.y*rad*.35;
+      ctx.fillStyle='#ffb7c6'; ctx.beginPath(); ctx.ellipse(nx,ny,rad*.45,rad*.33,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#7a3b4d';
+      const dx = dir.y?rad*.12:rad*.18, dy=dir.x?rad*.12:rad*.18;
+      ctx.beginPath(); ctx.arc(nx-dx,ny-dy,rad*.08,0,Math.PI*2); ctx.arc(nx+dx,ny+dy,rad*.08,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#2a2230';
+      const ox=cx+dir.x*rad*.05-dir.y*rad*.25, oy=cy+dir.y*rad*.05+dir.x*rad*.25;
+      const ox2=cx+dir.x*rad*.05+dir.y*rad*.25, oy2=cy+dir.y*rad*.05-dir.x*rad*.25;
+      ctx.beginPath(); ctx.arc(ox,oy,rad*.08,0,Math.PI*2); ctx.arc(ox2,oy2,rad*.08,0,Math.PI*2); ctx.fill();
     }
-    return false;
-}
-
-function shareScore() {
-    if (navigator.share) {
-        navigator.share({
-            title: "🐷 Cerdo Snake",
-            text: `¡He hecho ${score} puntos en Cerdo Snake! ¿Puedes superarme?`,
-            url: window.location.href
-        });
-    } else {
-        alert("Tu navegador no soporta compartir.");
+    // colita (solo última pieza)
+    if(isTail){
+      ctx.strokeStyle='#ff86a4'; ctx.lineWidth=Math.max(1,rad*.14);
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.quadraticCurveTo(cx-rad*.9,cy+rad*.2, cx-rad*1.2, cy);
+      ctx.stroke();
     }
-}
+  }
 
-let game = setInterval(draw, 100);
+  // Juego
+  function reset(){
+    snake=[{x:Math.floor(COLS/2)-1,y:Math.floor(ROWS/2)},
+           {x:Math.floor(COLS/2)-2,y:Math.floor(ROWS/2)},
+           {x:Math.floor(COLS/2)-3,y:Math.floor(ROWS/2)}];
+    dir={x:1,y:0}; nextDir={...dir}; score=0; scoreEl.textContent=score;
+    tick=SPEED0; fat=0; grow=0; acorn=free(snake);
+    running=true; paused=false; last=0; acc=0; cvs.style.animation='pop .22s ease';
+    draw();
+  }
+  function setPause(p){ paused=p; pauseBtn.textContent=p?'▶️ Reanudar':'⏸️ Pausa'; }
+  function step(){
+    // sin reversa instantánea
+    if(Math.abs(nextDir.x)!==Math.abs(dir.x) || Math.abs(nextDir.y)!==Math.abs(dir.y)){
+      if(!(nextDir.x===-dir.x && nextDir.y===-dir.y)) dir=nextDir;
+    }
+    const h=snake[0]; let nx=h.x+dir.x, ny=h.y+dir.y;
+    if(wrap){ nx=(nx+COLS)%COLS; ny=(ny+ROWS)%ROWS; } else { if(nx<0||ny<0||nx>=COLS||ny>=ROWS) return over(); }
+    if(snake.some((s,i)=>i>0 && s.x===nx && s.y===ny)) return over();
+    snake.unshift({x:nx,y:ny});
+    if(nx===acorn.x&&ny===acorn.y){
+      score++; scoreEl.textContent=score;
+      if(score>best){best=score; localStorage.setItem('cerdo_best',best); bestEl.textContent=best;}
+      grow++; fat=Math.min(fat+1,20); tick=Math.max(SPEED_MIN, tick-SPEED_STEP);
+      burst(nx,ny); acorn=free(snake); oing();
+    }
+    if(grow>0) grow--; else snake.pop();
+  }
+  function over(){ running=false; paused=false; draw(true); }
+
+  function draw(gameOver=false){
+    board(); acornDraw(acorn);
+    const base=CELL*.38, extra=Math.min(fat*.02*CELL, CELL*.22), headDir=dir;
+    snake.forEach((s,i)=>{ const r=base+extra*(i?0.75:1); ctx.save(); ctx.shadowColor='rgba(255,111,146,.35)'; ctx.shadowBlur=fat*.3;
+      pig(s,r,i===0,i===0?headDir:{x:0,y:0}, i===snake.length-1); ctx.restore();
+    });
+    drawParticles();
+    if(!running || gameOver){
+      ctx.fillStyle='rgba(0,0,0,.55)'; if(document.body.getAttribute('data-theme')==='light') ctx.fillStyle='rgba(0,0,0,.25)';
+      ctx.fillRect(0,0,cvs.width,cvs.height);
+      ctx.fillStyle=document.body.getAttribute('data-theme')==='light'?'#111':'#fff';
+      ctx.textAlign='center'; ctx.font='800 28px ui-sans-serif,system-ui'; 
+      ctx.fillText(gameOver?'💀 ¡Has perdido, jamoncito!':'🐷 Cerdo & Bellotas', cvs.width/2, cvs.height/2-10);
+      ctx.font='600 16px ui-sans-serif,system-ui'; ctx.fillText('Pulsa ▶️ para reiniciar', cvs.width/2, cvs.height/2+22);
+    }
+  }
+
+  // Loop
+  function loop(t){
+    if(!running){ draw(); return; }
+    if(paused){ draw(); requestAnimationFrame(loop); return; }
+    if(!last) last=t; const dt=t-last; last=t; acc+=dt;
+    while(acc>=tick){ step(); acc-=tick; }
+    draw(); requestAnimationFrame(loop);
+  }
+
+  // Input
+  addEventListener('keydown',e=>{
+    const k=e.key.toLowerCase();
+    if(k==='arrowup'||k==='w') nextDir={x:0,y:-1};
+    else if(k==='arrowdown'||k==='s') nextDir={x:0,y:1};
+    else if(k==='arrowleft'||k==='a') nextDir={x:-1,y:0};
+    else if(k==='arrowright'||k==='d') nextDir={x:1,y:0};
+    else if(k===' ') { reset(); requestAnimationFrame(loop); }
+    else if(k==='p') setPause(!paused);
+  });
+  function tap(v){ nextDir=v; }
+  ;[up,down,left,right].forEach(b=>b.addEventListener('touchstart',ev=>{ev.preventDefault(); b.click();},{passive:false}));
+  up.onclick=()=>tap({x:0,y:-1}); down.onclick=()=>tap({x:0,y:1}); left.onclick=()=>tap({x:-1,y:0}); right.onclick=()=>tap({x:1,y:0});
+  // Swipe
+  let t0=null; cvs.addEventListener('touchstart',e=>{ if(!running) return; const t=e.changedTouches[0]; t0={x:t.clientX,y:t.clientY}; },{passive:true});
+  cvs.addEventListener('touchend',e=>{ if(!t0) return; const t=e.changedTouches[0], dx=t.clientX-t0.x, dy=t.clientY-t0.y; if(Math.max(Math.abs(dx),Math.abs(dy))>24){ if(Math.abs(dx)>Math.abs(dy)) nextDir={x:dx>0?1:-1,y:0}; else nextDir={x:0,y:dy>0?1:-1}; } t0=null; },{passive:true});
+
+  // Botones
+  playBtn.onclick=()=>{ ensureAudio(); reset(); requestAnimationFrame(loop); };
+  pauseBtn.onclick=()=>{ if(running) setPause(!paused); };
+  soundBtn.onclick=()=>{ audioOn=!audioOn; soundBtn.textContent=audioOn?'🔊 Sonido':'🔇 Silencio'; if(audioOn) ensureAudio(); };
+  wrapBtn.onclick =()=>{ wrap=!wrap; wrapBtn.textContent=wrap?'🔁 Wrap: ON':'⛔ Wrap: OFF'; };
+  themeBtn.onclick=()=>{ const light = document.body.getAttribute('data-theme')==='light'; document.body.setAttribute('data-theme', light?'':'light'); };
+  shareBtn.onclick=async()=>{
+    const url=location.href, text='¡Prueba mi juego Cerdo & Bellotas! 🐷🌰';
+    if(navigator.share){ try{await navigator.share({title:document.title,text,url});}catch(_){} }
+    else{ try{await navigator.clipboard.writeText(url); shareBtn.textContent='✅ Copiado'; setTimeout(()=>shareBtn.textContent='🔗 Compartir',1600);}catch(_){} }
+  };
+
+  // Init
+  resize(); draw(false);
+})();
 </script>
-
 </body>
 </html>
